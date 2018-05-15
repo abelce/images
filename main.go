@@ -5,7 +5,7 @@ import (
 	"admin/application"
 	"log"
 	"encoding/json"
-	// "fmt"
+	"fmt"
 )
 
 type contentTypeMiddleware struct {
@@ -18,6 +18,7 @@ func (h *contentTypeMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 	
 	//判断cookie是否存在
 	cookie, err := r.Cookie("gosessionid");
+	fmt.Println(r.URL.Path)
 	if r.URL.Path !="/login" &&  (err !=nil || cookie.Value == "") {
 		message := struct {
 			Message string
@@ -46,7 +47,7 @@ func main() {
 		next: application.NewRouter(),
 	}
 
-	err := http.ListenAndServe(":9090", routeHandler)
+	err := http.ListenAndServe(":9001", routeHandler)
 	if err != nil {
 		log.Fatal(err)
 		panic(err)

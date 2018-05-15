@@ -14,6 +14,7 @@ import (
 	"admin/session"
 	_ "admin/memory"
 	"time"
+	// "admin/application"
 )
 
 
@@ -42,6 +43,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return;
 	}
 
+	fmt.Println(email)
 	newUser, err := port.Login(email, passwd);
 
 	res := Result{}
@@ -87,8 +89,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 	newUser.LastUpdateTime = time;
 	newUser.CreateTime = time;
 
-
-	tmp, err := port.Save(&newUser);
+	tmp, err := port.SaveUser(&newUser);
 
 	res := Result{};
 	if err != nil {
@@ -191,10 +192,14 @@ func findUsers(w http.ResponseWriter, r *http.Request) {
 
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
+
 	r.HandleFunc("/login", login).Methods(http.MethodPost)
 	r.HandleFunc("/create", create).Methods(http.MethodPost)
 	r.HandleFunc("/delete", delete).Methods(http.MethodPut)
 	r.HandleFunc("/users", findUsers).Methods(http.MethodGet)
+
+	// article
+	r.HandleFunc("/article", SaveArticle).Methods(http.MethodPost)
 
 	return r
 }

@@ -9,5 +9,6 @@ type Create struct {
 	Phone		string `json:"phone"`
 	Sex			string `json:"sex"`
 	IsAdmin		string `json:"isAdmin"`
+	LogoImage   string `json:"logoImage"`
 }
 
