@@ -1,48 +1,47 @@
 package application
 
 import (
-	"admin/port"
 	"admin/domain"
+	"admin/port"
+	"encoding/json"
 	"github.com/gorilla/mux"
-	"net/http"
 	"io/ioutil"
 	"log"
-	"encoding/json"
+	"net/http"
 	// "strings"
 	"strconv"
 	// "fmt"
-	"admin/session"
 	_ "admin/memory"
+	"admin/session"
 	"time"
 )
 
+var globalSessions *session.Manager
 
-var globalSessions *session.Manager;
-
-type Result struct{
-	TextStatus string   `json:"textStatus"`
-	Data    interface{} `json:"data"`
-	Error   error		`json:"error"`
+type Result struct {
+	TextStatus string      `json:"textStatus"`
+	Data       interface{} `json:"data"`
+	Error      error       `json:"error"`
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm();
-	data, err := ioutil.ReadAll(r.Body);
+	r.ParseForm()
+	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		
+
 	}
 
 	user := domain.User{}
-	json.Unmarshal(data, &user);
+	json.Unmarshal(data, &user)
 
-	email := user.Email;
-	passwd := user.Password;
+	email := user.Email
+	passwd := user.Password
 	if email == "" || passwd == "" {
 		log.Fatal("用户名或密码为空")
-		return;
+		return
 	}
 
-	newUser, err := port.Login(email, passwd);
+	newUser, err := port.Login(email, passwd)
 
 	res := Result{}
 	if err != nil {
@@ -53,7 +52,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		res.Data = &newUser
 
 		//设置session
-		globalSessions.SessionStart(w, r);
+		globalSessions.SessionStart(w, r)
 	}
 
 	result, _ := json.Marshal(res)
@@ -64,7 +63,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err)
 		}
-		wc += n;
+		wc += n
 	}
 }
 
@@ -73,29 +72,28 @@ func create(w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal("读取用户信息创建信息错误")
-		return;
+		return
 	}
 	newUser := domain.User{}
 	err = json.Unmarshal(data, &newUser)
 	if err != nil {
 		log.Fatal("解析失败")
-		return;
+		return
 	}
 
-	time := time.Now().Unix();
-	newUser.AccessTime = time;
-	newUser.LastUpdateTime = time;
-	newUser.CreateTime = time;
+	time := time.Now().Unix()
+	newUser.AccessTime = time
+	newUser.LastUpdateTime = time
+	newUser.CreateTime = time
 
+	tmp, err := port.Save(&newUser)
 
-	tmp, err := port.Save(&newUser);
-
-	res := Result{};
+	res := Result{}
 	if err != nil {
-		res.TextStatus = "failed";
-		res.Error = err;
+		res.TextStatus = "failed"
+		res.Error = err
 	} else {
-		res.TextStatus = "ok";
+		res.TextStatus = "ok"
 		res.Data = tmp
 	}
 
@@ -114,11 +112,11 @@ func create(w http.ResponseWriter, r *http.Request) {
 }
 
 func delete(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm();
+	r.ParseForm()
 	userID, _ := ioutil.ReadAll(r.Body)
 
-	if len(userID) == 0  {
-		return;
+	if len(userID) == 0 {
+		return
 	}
 
 	params := struct {
@@ -134,8 +132,8 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	} else {
 		result.TextStatus = "ok"
 	}
-	res, _ := json.Marshal(result);
-		
+	res, _ := json.Marshal(result)
+
 	wc := 0
 	for wc < len(res) {
 		n, err := w.Write(res)
@@ -147,24 +145,24 @@ func delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func findUsers(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm();
+	r.ParseForm()
 
-	var pageSize int;
-	var pageNum  int;
+	var pageSize int
+	var pageNum int
 	if r.FormValue("pageSize") != "" {
 		pageSize, _ = strconv.Atoi(r.FormValue("pageSize"))
 	} else {
-		pageSize = 10;
+		pageSize = 10
 	}
 
 	if r.FormValue("pageNum") != "" {
 		pageNum, _ = strconv.Atoi(r.FormValue("pageNum"))
 	} else {
-		pageNum = 1;
+		pageNum = 1
 	}
 
-	offset := (pageNum - 1) * pageSize;
-	end := pageNum * pageSize;
+	offset := (pageNum - 1) * pageSize
+	end := pageNum * pageSize
 
 	users, err := port.Users(offset, end)
 
@@ -174,19 +172,23 @@ func findUsers(w http.ResponseWriter, r *http.Request) {
 		res.Error = err
 	} else {
 		res.TextStatus = "ok"
-		res.Data = users;
+		res.Data = users
 	}
 
 	result, err := json.Marshal(users)
 
-	wc := 0;
+	wc := 0
 	for wc < len(result) {
-		n, err := w.Write(result);
+		n, err := w.Write(result)
 		if err != nil {
 			panic("查询所有用户返回写入失败")
 		}
-		wc += n;
+		wc += n
 	}
+}
+
+func test(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("hello"))
 }
 
 func NewRouter() *mux.Router {
@@ -196,10 +198,11 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/delete", delete).Methods(http.MethodPut)
 	r.HandleFunc("/users", findUsers).Methods(http.MethodGet)
 
+	r.HandleFunc("/article", test).Methods(http.MethodPost)
 	return r
 }
 
 func init() {
-	globalSessions, _  = session.NewManager("memory", "gosessionid", 3306)
-	go globalSessions.GC();
+	globalSessions, _ = session.NewManager("memory", "gosessionid", 3306)
+	go globalSessions.GC()
 }
