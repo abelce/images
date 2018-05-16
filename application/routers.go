@@ -14,6 +14,7 @@ import (
 	_ "admin/memory"
 	"admin/session"
 	"time"
+	// "admin/application"
 )
 
 var globalSessions *session.Manager
@@ -41,6 +42,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(email)
 	newUser, err := port.Login(email, passwd)
 
 	res := Result{}
@@ -86,7 +88,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 	newUser.LastUpdateTime = time
 	newUser.CreateTime = time
 
-	tmp, err := port.Save(&newUser)
+	tmp, err := port.SaveUser(&newUser)
 
 	res := Result{}
 	if err != nil {
@@ -193,12 +195,15 @@ func test(w http.ResponseWriter, r *http.Request) {
 
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
+
 	r.HandleFunc("/login", login).Methods(http.MethodPost)
 	r.HandleFunc("/create", create).Methods(http.MethodPost)
 	r.HandleFunc("/delete", delete).Methods(http.MethodPut)
 	r.HandleFunc("/users", findUsers).Methods(http.MethodGet)
 
 	r.HandleFunc("/article", test).Methods(http.MethodPost)
+	// article
+	//r.HandleFunc("/article", SaveArticle).Methods(http.MethodPost)
 	return r
 }
 

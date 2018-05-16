@@ -3,9 +3,9 @@ package main
 import (
 	"admin/application"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-	// "fmt"
 )
 
 type contentTypeMiddleware struct {

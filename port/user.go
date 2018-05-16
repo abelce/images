@@ -10,7 +10,7 @@ import (
 	// "time"
 )
 
-func Save(user *domain.User) (*domain.User, error) {
+func SaveUser(user *domain.User) (*domain.User, error) {
 	db, err := sql.Open("mysql", "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true")
 	defer db.Close()
 	
@@ -31,7 +31,8 @@ func Save(user *domain.User) (*domain.User, error) {
 			isAdmin,
 			createTime,
 			accessTime,
-			lastUpdateTime
+			lastUpdateTime,
+			logoImage
 		) VALUES (?,?,?,?,?,?,?,?,?,?)`)
 	row, err := stmt.Exec(
 		user.Email, 
@@ -44,6 +45,7 @@ func Save(user *domain.User) (*domain.User, error) {
 		user.CreateTime,
 		user.AccessTime,
 		user.LastUpdateTime,
+		user.LogoImage,
 	)
 	if err != nil {
 		return nil, err
@@ -63,7 +65,7 @@ func Login(email, password string) (*domain.User, error) {
 		return nil, err
 	}
 
-	stmts, err := db.Prepare(`SELECT id, email, firstName, lastName, sex, phone, isAdmin FROM admin.user WHERE email=? and password=?`)
+	stmts, err := db.Prepare(`SELECT id, email, firstName, lastName, sex, phone, isAdmin, logoImage FROM admin.user WHERE email=? and password=?`)
 	rows, err := stmts.Query(email, password)
 	if err != nil {
 		return nil, err
@@ -80,7 +82,9 @@ func Login(email, password string) (*domain.User, error) {
 			&user.LastName,
 			&user.Sex,
 			&user.Phone,
-			&user.IsAdmin)
+			&user.IsAdmin,
+			&user.LogoImage,
+		)
 	}
 	return user, nil
 }
@@ -137,6 +141,7 @@ func Users(offset, end int) ([]*domain.User, error) {
 			&user.CreateTime,
 			&user.LastUpdateTime,
 			&user.AccessTime,
+			&user.LogoImage,
 		)
 		users = append(users, &user)
 	}
