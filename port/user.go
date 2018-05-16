@@ -65,8 +65,12 @@ func Login(email, password string) (*domain.User, error) {
 		return nil, err
 	}
 
-	stmts, err := db.Prepare(`SELECT id, email, firstName, lastName, sex, phone, isAdmin, logoImage FROM admin.user WHERE email=? and password=?`)
+	fmt.Println(db)
+	stmts, err := db.Prepare(`SELECT id, email, firstName, lastName, sex, phone, isAdmin, logoImage FROM admin.user WHERE email=? and password=?`)	
+	fmt.Println(stmts)
 	rows, err := stmts.Query(email, password)
+	fmt.Println("err")
+
 	if err != nil {
 		return nil, err
 		// fmt.Println(err)

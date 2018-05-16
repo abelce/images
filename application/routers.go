@@ -10,7 +10,7 @@ import (
 	"net/http"
 	// "strings"
 	"strconv"
-	// "fmt"
+	"fmt"
 	_ "admin/memory"
 	"admin/session"
 	"time"
@@ -189,9 +189,9 @@ func findUsers(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func test(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("hello"))
-}
+// func test(w http.ResponseWriter, r *http.Request) {
+// 	w.Write([]byte("hello"))
+// }
 
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
@@ -201,7 +201,7 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/delete", delete).Methods(http.MethodPut)
 	r.HandleFunc("/users", findUsers).Methods(http.MethodGet)
 
-	r.HandleFunc("/article", test).Methods(http.MethodPost)
+	r.HandleFunc("/article", SaveArticle).Methods(http.MethodPost)
 	// article
 	//r.HandleFunc("/article", SaveArticle).Methods(http.MethodPost)
 	return r

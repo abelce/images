@@ -1,40 +1,52 @@
 package application
 
 import (
+	"admin/domain"
 	"admin/port"
-	"github.com/gorilla/mux"
+	// "github.com/gorilla/mux"
 	"net/http"
 	"io/ioutil"
 	"log"
 	"encoding/json"
 	// "strings"
-	"strconv"
+	// "strconv"
 	"github.com/satori/go.uuid"
 	"fmt"
 	"time"
 )
 
 func SaveArticle(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm();
+	// r.ParseForm();
+	r.ParseForm()
 	data, err := ioutil.ReadAll(r.Body);
-	article := port.Article{}
+	if (err != nil ) {
+		log.Fatal("获取参数失败")
+		return;
+	}
+	
+	article := domain.Article{}
+	fmt.Println("123")
 	err = json.Unmarshal(data, &article)
+	fmt.Println(article.Title);		
+	
 	if err != nil {
 		log.Fatal("解析失败")
 		return;
 	}
 
 	id := article.ID;
-	fmt.Println(id)
-	time := time.Now().Unix();	
-	if id == nil {
-		id, _ := uuid.FromString("f5394eef-e576-4709-9e4b-a7c231bd34a4")
-		article.ID = id;
+	
+	time := time.Now().Unix();
+	if id == "" {
+		id, _ := uuid.NewV4()
+		article.ID = id.String();
 		article.CreateTime = time;
 	}
 	article.LastUpdateTime = time;
 
+	fmt.Println(article.Title);	
 	tmp, err := port.CreateArticle(&article);
+	fmt.Println(article.Title);
 
 	res := Result{};
 	if err != nil {

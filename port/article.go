@@ -34,7 +34,7 @@ func CreateArticle(article *domain.Article) (*domain.Article, error){
 			createTime,
 			lastUpdateTime
 		) VALUES (?,?,?,?,?,?,?,?,?,?,?)`)
-	_, err := stmt.Exec(
+    row, err := stmt.Exec(
 		article.ID, 
 		article.Title,
 		article.Markdowncontent,
@@ -49,45 +49,47 @@ func CreateArticle(article *domain.Article) (*domain.Article, error){
 	if err != nil {
 		return nil, err
 	}
+	id, _ := row.LastInsertId()
+	fmt.Println(id)
 
 	return article, nil
 }
 
-func UpdateArticle(article *domain.Article) (*domain.Article, error){
-	db, err := sql.Open("mysql", "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true")
-	defer db.Close()
+// func UpdateArticle(article *domain.Article) (*domain.Article, error){
+// 	db, err := sql.Open("mysql", "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true")
+// 	defer db.Close()
 	
-	if err != nil {
-		return nil, err
-		// log.Fatal(err)
-	}
+// 	if err != nil {
+// 		return nil, err
+// 		// log.Fatal(err)
+// 	}
 
-	stmt, _ := db.Prepare(`UPDATE 
-		admin.article
-		(
-			id,
-			title,
-			markdowncontent,
-			private,
-			tags,
-			status,
-			categories,
-			type,
-			description
-		) VALUES (?,?,?,?,?,?,?,?,?,?)`)
-	_, err := stmt.Exec(
-		article.ID, 
-		article.Title,
-		article.Markdowncontent,
-		article.Private,
-		article.Tags,
-		article.Categories,
-		article.Type,
-		article.Description
-	)
-	if err != nil {
-		return nil, err
-	}
+// 	stmt, _ := db.Prepare(`UPDATE 
+// 		admin.article
+// 		(
+// 			id,
+// 			title,
+// 			markdowncontent,
+// 			private,
+// 			tags,
+// 			status,
+// 			categories,
+// 			type,
+// 			description
+// 		) VALUES (?,?,?,?,?,?,?,?,?,?)`)
+// 	_, err := stmt.Exec(
+// 		article.ID, 
+// 		article.Title,
+// 		article.Markdowncontent,
+// 		article.Private,
+// 		article.Tags,
+// 		article.Categories,
+// 		article.Type,
+// 		article.Description
+// 	)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return article, nil
-}
+// 	return article, nil
+// }
