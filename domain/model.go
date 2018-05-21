@@ -22,9 +22,14 @@ type Article struct {
 	Private    string `json:"private"`
 	Tags       string `json:"tags"`
 	Status     string `json:"status"`
-	Categories string  `json:"categories"`
-	Type       string  `json:"type"`   //original
-	Description string  `json:"description"`
-	CreateTime  int64	`json:"createTime"`		//创建时间
-	LastUpdateTime int64  `json:"lastUpdateTime"`		//最近的更新时间
+	Categories string `json:"categories"`
+	Type       string `json:"type"`   //original
+	Description string `json:"description"`
+	CreateTime  string `json:"createTime"`		//创建时间
+	LastUpdateTime string `json:"lastUpdateTime"`		//最近的更新时间
+}
+
+
+type Mate struct {
+	Total     int `json:"total"`
 }

@@ -23,6 +23,7 @@ type Result struct {
 	TextStatus string      `json:"textStatus"`
 	Data       interface{} `json:"data"`
 	Error      error       `json:"error"`
+	Mate       domain.Mate  `json:"mate"`
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -202,8 +203,10 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/users", findUsers).Methods(http.MethodGet)
 
 	r.HandleFunc("/article", SaveArticle).Methods(http.MethodPost)
-	// article
-	//r.HandleFunc("/article", SaveArticle).Methods(http.MethodPost)
+	r.HandleFunc("/article/{id}", UpdateArticle).Methods(http.MethodPut)
+	r.HandleFunc("/article/{id}", GetArticle).Methods(http.MethodGet)
+	r.HandleFunc("/article/list", ArticleList).Methods(http.MethodGet)
+
 	return r
 }
 

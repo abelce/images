@@ -5,7 +5,7 @@ import (
 	// "admin/application"
 	"database/sql"
 	"fmt"
-	// "log"
+	"log"
 	_ "github.com/go-sql-driver/mysql"
 	// "time"
 )
@@ -40,6 +40,7 @@ func CreateArticle(article *domain.Article) (*domain.Article, error){
 		article.Markdowncontent,
 		article.Private,
 		article.Tags,
+		article.Status,
 		article.Categories,
 		article.Type,
 		article.Description,
@@ -47,6 +48,7 @@ func CreateArticle(article *domain.Article) (*domain.Article, error){
 		article.LastUpdateTime,
 	)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	id, _ := row.LastInsertId()
@@ -55,41 +57,121 @@ func CreateArticle(article *domain.Article) (*domain.Article, error){
 	return article, nil
 }
 
-// func UpdateArticle(article *domain.Article) (*domain.Article, error){
-// 	db, err := sql.Open("mysql", "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true")
-// 	defer db.Close()
+
+func UpdateArticle(id string, article *domain.Article) (*domain.Article, error) {
+	db, err := sql.Open("mysql", "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true")
+	defer db.Close()
+
+	// log.Fatal("update")
+	if err != nil {
+		return nil, err
+		// log.Fatal(err)
+	}
 	
-// 	if err != nil {
-// 		return nil, err
-// 		// log.Fatal(err)
-// 	}
+	stmt, _ := db.Prepare(`UPDATE admin.article SET 
+		title=?,
+		markdowncontent=?,
+		private=?,
+		tags=?,
+		status=?,
+		categories=?,
+		type=?,
+		description=?,
+		lastUpdateTime=? WHERE id=?
+		`)
+	res, err := stmt.Exec(
+		article.Title,
+		article.Markdowncontent,
+		article.Private,
+		article.Tags,
+		article.Status,
+		article.Categories,
+		article.Type,
+		article.Description,
+		article.LastUpdateTime,
+		id,
+	)
+	if err != nil {
+		return nil, err
+	}
+	num, err := res.RowsAffected()
+	fmt.Println(num)
 
-// 	stmt, _ := db.Prepare(`UPDATE 
-// 		admin.article
-// 		(
-// 			id,
-// 			title,
-// 			markdowncontent,
-// 			private,
-// 			tags,
-// 			status,
-// 			categories,
-// 			type,
-// 			description
-// 		) VALUES (?,?,?,?,?,?,?,?,?,?)`)
-// 	_, err := stmt.Exec(
-// 		article.ID, 
-// 		article.Title,
-// 		article.Markdowncontent,
-// 		article.Private,
-// 		article.Tags,
-// 		article.Categories,
-// 		article.Type,
-// 		article.Description
-// 	)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	if err != nil || num == 0 {
+		return nil, err
+	}
 
-// 	return article, nil
-// }
+	return article, nil
+}
+
+
+func GetArticle(id string) (*domain.Article, error) {
+	db, err := sql.Open("mysql", "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true")
+	defer db.Close()
+	
+	if err != nil {
+		log.Fatal(err)		
+		return nil, err
+	}
+	
+	stmt, _ := db.Prepare(`SELECT * FROM admin.article WHERE id=?`)
+	row := stmt.QueryRow(id)
+	if err != nil {
+		log.Fatal(`查询${id}失败`)
+		return nil, err
+	}
+
+	article := domain.Article{};
+	row.Scan(
+		&article.ID,
+		&article.Title,
+		&article.Markdowncontent,
+		&article.Private,
+		&article.Tags,
+		&article.Categories,
+		&article.Type,
+		&article.Description,
+		&article.CreateTime,
+		&article.LastUpdateTime,
+		&article.Status,
+	 )
+	return &article, nil
+}
+
+func GetArticleList(offset int, end int) ([]*domain.Article, error) {
+	db, err := sql.Open("mysql", "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true")
+	defer db.Close()
+
+	articles := []*domain.Article{}
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	stmt, _ := db.Prepare(`SELECT * FROM admin.article LIMIT ?,?`)
+	rows, err := stmt.Query(offset, end)
+	if err != nil {
+		log.Fatal(`查询失败`)
+		return articles, err
+	}
+
+	for rows.Next() {
+		article := domain.Article{}
+		rows.Scan(
+			&article.ID,
+			&article.Title,
+			&article.Markdowncontent,
+			&article.Private,
+			&article.Tags,
+			&article.Categories,
+			&article.Type,
+			&article.Description,
+			&article.CreateTime,
+			&article.LastUpdateTime,
+			&article.Status,
+		)
+		articles = append(articles, &article)
+	}
+
+	return articles, nil
+}
