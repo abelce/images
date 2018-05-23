@@ -163,7 +163,6 @@ func ArticleList(w http.ResponseWriter, r *http.Request) {
 		pageNum, _ = strconv.Atoi(r.FormValue("pageNum"))
 	}
 
-
 	tmp, err := port.GetArticleList(pageSize * (pageNum - 1), pageNum * pageSize )
 	res := Result{}
 	if err != nil {
