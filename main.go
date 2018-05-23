@@ -2,7 +2,7 @@ package main
 
 import (
 	"admin/application"
-	"encoding/json"
+	// "encoding/json"
 	// "fmt"
 	"log"
 	"net/http"
@@ -21,27 +21,27 @@ func (h *contentTypeMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 		return;
 	}
 	//判断cookie是否存在
-	cookie, err := r.Cookie("gosessionid")
-	if r.URL.Path != "/login" && (err != nil || cookie.Value == "") {
-		message := struct {
-			Message string
-		}{
-			Message: "session is expiresed",
-		}
+	// cookie, err := r.Cookie("gosessionid")
+	// if r.URL.Path != "/login" && (err != nil || cookie.Value == "") {
+	// 	message := struct {
+	// 		Message string
+	// 	}{
+	// 		Message: "session is expiresed",
+	// 	}
 
-		result, _ := json.Marshal(message)
-		wc := 0
+	// 	result, _ := json.Marshal(message)
+	// 	wc := 0
 
-		for wc < len(result) {
-			n, err := w.Write(result)
-			if err != nil {
-				panic(err)
-			}
-			wc += n
-		}
-	} else {
+	// 	for wc < len(result) {
+	// 		n, err := w.Write(result)
+	// 		if err != nil {
+	// 			panic(err)
+	// 		}
+	// 		wc += n
+	// 	}
+	// } else {
 		h.next.ServeHTTP(w, r)
-	}
+	// }
 }
 
 func main() {
