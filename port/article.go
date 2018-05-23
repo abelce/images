@@ -175,3 +175,24 @@ func GetArticleList(offset int, end int) ([]*domain.Article, error) {
 
 	return articles, nil
 }
+
+
+func ArticleTotal() (int, error) {
+	db, err := sql.Open("mysql", "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true")
+	defer db.Close()
+
+	if err != nil {
+		log.Fatal(err)
+		return 0, err
+	}
+
+	var total int;
+	stmt, _ := db.Prepare(`SELECT count(*) FROM admin.article`)
+	row := stmt.QueryRow()
+	if err != nil {
+		log.Fatal(`查询${id}失败`)
+		return 0, err
+	}
+	row.Scan(&total);
+	return total, nil;
+}

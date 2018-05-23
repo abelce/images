@@ -173,7 +173,8 @@ func ArticleList(w http.ResponseWriter, r *http.Request) {
 		res.Data = tmp
 
 		mate := domain.Mate{}
-		mate.Total = len(tmp)
+		total, _ := port.ArticleTotal();
+		mate.Total = total
 		res.Mate = mate
 	}
 
