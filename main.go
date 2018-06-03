@@ -15,6 +15,10 @@ type contentTypeMiddleware struct {
 func (h *contentTypeMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	w.Header().Set("access-control-allow-origin", "*")
+	w.Header().Set("access-control-allow-methods", "*")
+	w.Header().Set("access-control-allow-headers", "*")
+	w.Header().Set("access-control-expose-headers", "*")
+	w.Header().Set("access-control-allow-credentials", "true")
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(200)
