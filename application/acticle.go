@@ -89,6 +89,7 @@ func UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	
 	if err != nil {
 		log.Fatal("解析失败")
+		// w.Write("解析失败");
 		return;
 	}
 	

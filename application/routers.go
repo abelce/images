@@ -190,10 +190,6 @@ func findUsers(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// func test(w http.ResponseWriter, r *http.Request) {
-// 	w.Write([]byte("hello"))
-// }
-
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
 
@@ -206,6 +202,8 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/article/list", ArticleList).Methods(http.MethodGet)
 	r.HandleFunc("/article/{id}", UpdateArticle).Methods(http.MethodPut)
 	r.HandleFunc("/article/{id}", GetArticle).Methods(http.MethodGet)
+
+	r.HandleFunc("/types/{type}", GetTypesByType).Methods(http.MethodGet);
 
 	return r
 }
