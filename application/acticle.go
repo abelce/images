@@ -6,13 +6,15 @@ import (
 	// "github.com/gorilla/mux"
 	"net/http"
 	"io/ioutil"
-	"log"
+	// "log"
 	"encoding/json"
 	// "strings"
 	"strconv"
 	"github.com/satori/go.uuid"
 	"time"
 	"github.com/gorilla/mux"
+	"admin/utils"
+	"errors"
 )
 
 func GetTimestampString() string {
@@ -20,23 +22,18 @@ func GetTimestampString() string {
 }
 
 func SaveArticle(w http.ResponseWriter, r *http.Request) {
+	utils.ResetHTTPErrors()
 	r.ParseForm()
 	data, err := ioutil.ReadAll(r.Body);
-	if (err != nil ) {
-		log.Fatal("获取参数失败")
-		return;
+	if err != nil {
+		utils.HandleHTTPError(w, err)
 	}
-	
 	article := domain.Article{}
 	err = json.Unmarshal(data, &article)
-	
 	if err != nil {
-		log.Fatal("解析失败")
-		return;
+		utils.HandleHTTPError(w, err)
 	}
-
 	id := article.ID;
-	
 	time := GetTimestampString();
 	if id == "" {
 		id, _ := uuid.NewV4()
@@ -44,25 +41,20 @@ func SaveArticle(w http.ResponseWriter, r *http.Request) {
 		article.CreateTime = time;
 	}
 	article.LastUpdateTime = time;
-
 	tmp, err := port.CreateArticle(&article);
-
-	res := Result{};
 	if err != nil {
-		res.TextStatus = "failed";
-		res.Error = err;
-	} else {
-		res.TextStatus = "ok";
-		res.Data = tmp
+		utils.HandleHTTPError(w, err);
 	}
-
+	res := Result{
+		TextStatus: "ok",
+		Data: tmp,
+	};
 	result, _ := json.Marshal(res)
-
 	wc := 0
 	for wc < len(result) {
 		n, err := w.Write(result)
 		if err != nil {
-			panic(err)
+			utils.HandleServerError(w, err)
 		}
 		wc += n
 	}
@@ -74,47 +66,35 @@ func UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	if id == "" {
-		log.Fatal("获取id失败")
-		return;
+		utils.HandleHTTPError(w, errors.New("id is null"))
 	}
-
 	data, err := ioutil.ReadAll(r.Body)
-	if (err != nil ) {
-		log.Fatal("获取参数失败")
-		return;
+	if err != nil {
+		utils.HandleHTTPError(w, err)
 	}
-	
 	article := domain.Article{}
 	err = json.Unmarshal(data, &article)
-	
 	if err != nil {
-		log.Fatal("解析失败")
-		// w.Write("解析失败");
-		return;
+		utils.HandleHTTPError(w, err)
 	}
-	
 	//更新LastUpdateTime
 	time := GetTimestampString();
 	article.LastUpdateTime = time;
 
 	tmp, err := port.UpdateArticle(id, &article);
-
-	res := Result{};
 	if err != nil {
-		res.TextStatus = "failed";
-		res.Error = err;
-	} else {
-		res.TextStatus = "ok";
-		res.Data = tmp
+		utils.HandleHTTPError(w, err)
 	}
-
+	res := Result{
+		TextStatus: "ok",
+		Data: tmp,
+	};
 	result, _ := json.Marshal(res)
-
 	wc := 0
 	for wc < len(result) {
 		n, err := w.Write(result)
 		if err != nil {
-			panic(err)
+			utils.HandleServerError(w, err)
 		}
 		wc += n
 	}
@@ -126,27 +106,21 @@ func GetArticle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	if id == "" {
-		log.Fatal("获取参数id失败")
-		return
+		utils.HandleHTTPError(w, errors.New("id is null"))
 	}
-
 	tmp, err := port.GetArticle(id)
-	res := Result{}
 	if err != nil {
-		res.TextStatus = "failed"
-		res.Error = err
-	} else {
-		res.TextStatus = "ok"
-		res.Data = tmp
+		utils.HandleHTTPError(w, err)
 	}
-
+	res := Result{}
+	res.TextStatus = "ok"
+	res.Data = tmp
 	result, _ := json.Marshal(res)
-
 	wc := 0
 	for wc < len(result) {
 		n, err := w.Write(result)
 		if err != nil {
-			panic(err)
+			utils.HandleServerError(w, err)
 		}
 		wc += n
 	}
@@ -165,19 +139,17 @@ func ArticleList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmp, err := port.GetArticleList(pageSize * (pageNum - 1), pageNum * pageSize )
-	res := Result{}
 	if err != nil {
-		res.TextStatus = "failed"
-		res.Error = err
-	} else {
-		res.TextStatus = "ok"
-		res.Data = tmp
-
-		mate := domain.Mate{}
-		total, _ := port.ArticleTotal();
-		mate.Total = total
-		res.Mate = mate
+		utils.HandleHTTPError(w, err)
 	}
+	res := Result{}
+	res.TextStatus = "ok"
+	res.Data = tmp
+
+	mate := domain.Mate{}
+	total, _ := port.ArticleTotal();
+	mate.Total = total
+	res.Mate = mate
 
 	result, _ := json.Marshal(res)
 
@@ -185,7 +157,8 @@ func ArticleList(w http.ResponseWriter, r *http.Request) {
 	for wc < len(result) {
 		n, err := w.Write(result)
 		if err != nil {
-			panic(err)
+			// panic(err)
+			utils.HandleServerError(w, err)
 		}
 		wc += n
 	}

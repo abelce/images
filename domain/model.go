@@ -39,10 +39,3 @@ type Article struct {
 	CreateTime  string `json:"createTime"`		//创建时间
 	LastUpdateTime string `json:"lastUpdateTime"`		//最近的更新时间
 }
-
-type Type struct {
-	ID        string `json:"id"`
-	Type      string `json:"type"`
-	Label     string `json:"label"`
-	Value     string `json:"value"`
-}

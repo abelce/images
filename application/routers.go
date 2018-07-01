@@ -14,6 +14,7 @@ import (
 	_ "admin/memory"
 	"admin/session"
 	"time"
+	// "runtime"
 	// "admin/application"
 )
 
@@ -203,7 +204,8 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/article/{id}", UpdateArticle).Methods(http.MethodPut)
 	r.HandleFunc("/article/{id}", GetArticle).Methods(http.MethodGet)
 
-	r.HandleFunc("/types/{type}", GetTypesByType).Methods(http.MethodGet);
+	r.HandleFunc("/types", GetTypesByType).Methods(http.MethodGet)
+	r.HandleFunc("/types/create", CreateType).Methods(http.MethodPost)
 
 	return r
 }
