@@ -129,7 +129,7 @@ func GetArticle(w http.ResponseWriter, r *http.Request) {
 
 func ArticleList(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	var pageSize int = 10
+	var pageSize int = 100
 	var pageNum int = 1
 	if r.FormValue("pageSize") != "" {
 		pageSize, _ = strconv.Atoi(r.FormValue("pageSize"))

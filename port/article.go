@@ -114,7 +114,7 @@ func GetArticle(id string) (*domain.Article, error) {
 		return nil, err
 	}
 	
-	stmt, _ := db.Prepare(`SELECT * FROM admin.article WHERE id=? ORDER BY lastUpdateTime desc`)
+	stmt, _ := db.Prepare(`SELECT * FROM admin.article WHERE id=?`)
 	row := stmt.QueryRow(id)
 	if err != nil {
 		log.Fatal(`查询${id}失败`)
@@ -148,8 +148,10 @@ func GetArticleList(offset int, end int) ([]*domain.Article, error) {
 		return nil, err
 	}
 
-	stmt, _ := db.Prepare(`SELECT * FROM admin.article LIMIT ?,?`)
+	stmt, _ := db.Prepare(`SELECT * FROM admin.article ORDER BY lastUpdateTime desc LIMIT ?,?`)
+	// stmt, _ := db.Prepare(`SELECT * FROM admin.article ORDER BY lastUpdateTime desc`)
 	rows, err := stmt.Query(offset, end)
+	// rows, err := stmt.Query()
 	if err != nil {
 		log.Fatal(`查询失败`)
 		return articles, err
