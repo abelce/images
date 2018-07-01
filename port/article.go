@@ -114,7 +114,7 @@ func GetArticle(id string) (*domain.Article, error) {
 		return nil, err
 	}
 	
-	stmt, _ := db.Prepare(`SELECT * FROM admin.article WHERE id=?`)
+	stmt, _ := db.Prepare(`SELECT * FROM admin.article WHERE id=? ORDER BY lastUpdateTime desc`)
 	row := stmt.QueryRow(id)
 	if err != nil {
 		log.Fatal(`查询${id}失败`)
