@@ -1,11 +1,12 @@
 package main
 
 import (
-	"admin/application"
 	// "encoding/json"
-	// "fmt"
+	"fmt"
 	"log"
 	"net/http"
+
+	"admin/application"
 )
 
 type contentTypeMiddleware struct {
@@ -50,11 +51,20 @@ func (h *contentTypeMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 
 func main() {
 
+	path := "./config.json"
+	cxt, err := application.NewContext(path)
+	if err != nil {
+		fmt.Println("启动失败")
+		fmt.Println(err)
+		return
+	}
+	application.ApplicationContext = cxt
+
 	var routeHandler http.Handler = &contentTypeMiddleware{
 		next: application.NewRouter(),
 	}
 
-	err := http.ListenAndServe(":9001", routeHandler)
+	err = http.ListenAndServe(":9001", routeHandler)
 	if err != nil {
 		log.Fatal(err)
 		panic(err)

@@ -1,0 +1,17 @@
+{
+    "env":  "development",
+    "port": 9001,
+    "DB": {
+        "driverName": "mysql",
+        "dataSourceName": "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true"
+    },
+    "tableName": "admin.article",
+    "fileDB": {
+        "driverName": "mysql",
+        "dataSourceName": "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true"
+    },
+    "AritcleDB": {
+        "driverName": "mysql",
+        "dataSourceName": "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true"
+    }
+}
