@@ -1,21 +1,28 @@
 package application
 
 import (
-	"admin/domain"
-	"admin/port"
-	// "github.com/gorilla/mux"
+	"bytes"
 	"net/http"
 	"io/ioutil"
-	// "log"
+	"fmt"
 	"encoding/json"
 	// "strings"
 	"strconv"
-	"github.com/satori/go.uuid"
 	"time"
 	"github.com/gorilla/mux"
 	"admin/utils"
 	"errors"
+	"github.com/google/jsonapi"
+	"admin/application/command"
+	sjson "github.com/bitly/go-simplejson"
 )
+
+const successJSON = `{
+	"responseStatus": {
+		"success": true,
+		"version": "v1"
+	}
+}`
 
 func GetTimestampString() string {
 	return strconv.FormatInt(time.Now().Unix(), 10);
@@ -27,42 +34,37 @@ func SaveArticle(w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body);
 	if err != nil {
 		utils.HandleHTTPError(w, err)
+		return
 	}
-	article := domain.Article{}
-	err = json.Unmarshal(data, &article)
+	a := new(command.CreateArticle)
+	err = json.Unmarshal(data, &a)
 	if err != nil {
 		utils.HandleHTTPError(w, err)
+		return
 	}
-	id := article.ID;
-	time := GetTimestampString();
-	if id == "" {
-		id, _ := uuid.NewV4()
-		article.ID = id.String();
-		article.CreateTime = time;
-	}
-	article.LastUpdateTime = time;
-	tmp, err := port.CreateArticle(&article);
+
+	service, err := ApplicationContext.Service()
 	if err != nil {
-		utils.HandleHTTPError(w, err);
+		utils.HandleHTTPError(w, err)
+		return
 	}
-	res := Result{
-		TextStatus: "ok",
-		Data: tmp,
-	};
-	result, _ := json.Marshal(res)
-	wc := 0
-	for wc < len(result) {
-		n, err := w.Write(result)
-		if err != nil {
-			utils.HandleServerError(w, err)
-		}
-		wc += n
+
+	article, err :=  service.CreateArticle(*a)
+	if err != nil {
+		utils.HandleHTTPError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Println(article.ID)
+	err = jsonapi.MarshalPayloadWithoutIncluded(w, article)
+	if err != nil {
+		utils.HandleHTTPError(w, err)
+		return
 	}
 }
 
 func UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-
 	vars := mux.Vars(r)
 	id := vars["id"]
 	if id == "" {
@@ -72,31 +74,27 @@ func UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.HandleHTTPError(w, err)
 	}
-	article := domain.Article{}
-	err = json.Unmarshal(data, &article)
+	a := new(command.UpdateArticle)
+	err = json.Unmarshal(data, &a)
 	if err != nil {
 		utils.HandleHTTPError(w, err)
 	}
-	//更新LastUpdateTime
-	time := GetTimestampString();
-	article.LastUpdateTime = time;
-
-	tmp, err := port.UpdateArticle(id, &article);
+	a.ID = id
+	service, err := ApplicationContext.Service()
 	if err != nil {
 		utils.HandleHTTPError(w, err)
+		return
 	}
-	res := Result{
-		TextStatus: "ok",
-		Data: tmp,
-	};
-	result, _ := json.Marshal(res)
-	wc := 0
-	for wc < len(result) {
-		n, err := w.Write(result)
-		if err != nil {
-			utils.HandleServerError(w, err)
-		}
-		wc += n
+	article, err := service.UpdateArticle(*a)
+	if err != nil {
+		utils.HandleHTTPError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	err = jsonapi.MarshalPayloadWithoutIncluded(w, article)
+	if err != nil {
+		utils.HandleHTTPError(w, err)
+		return
 	}
 }
 
@@ -108,21 +106,20 @@ func GetArticle(w http.ResponseWriter, r *http.Request) {
 	if id == "" {
 		utils.HandleHTTPError(w, errors.New("id is null"))
 	}
-	tmp, err := port.GetArticle(id)
+	qs, err := ApplicationContext.QueryService()
 	if err != nil {
 		utils.HandleHTTPError(w, err)
+		return
 	}
-	res := Result{}
-	res.TextStatus = "ok"
-	res.Data = tmp
-	result, _ := json.Marshal(res)
-	wc := 0
-	for wc < len(result) {
-		n, err := w.Write(result)
-		if err != nil {
-			utils.HandleServerError(w, err)
-		}
-		wc += n
+	article, err := qs.FindByID(id)
+	if err != nil {
+		utils.HandleHTTPError(w, err)
+		return
+	}
+	err = jsonapi.MarshalPayloadWithoutIncluded(w, article)
+	if err != nil {
+		utils.HandleHTTPError(w, err)
+		return
 	}
 }
 
@@ -138,28 +135,50 @@ func ArticleList(w http.ResponseWriter, r *http.Request) {
 		pageNum, _ = strconv.Atoi(r.FormValue("pageNum"))
 	}
 
-	tmp, err := port.GetArticleList(pageSize * (pageNum - 1), pageNum * pageSize )
+	offsetNum := (pageNum - 1) * pageSize
+	limitNum := pageNum * pageSize
+	qs, err := ApplicationContext.QueryService()
+	total, articles, err := qs.Find(offsetNum, limitNum)
 	if err != nil {
 		utils.HandleHTTPError(w, err)
+		return
 	}
-	res := Result{}
-	res.TextStatus = "ok"
-	res.Data = tmp
-
-	mate := domain.Mate{}
-	total, _ := port.ArticleTotal();
-	mate.Total = total
-	res.Mate = mate
-
-	result, _ := json.Marshal(res)
-
-	wc := 0
-	for wc < len(result) {
-		n, err := w.Write(result)
-		if err != nil {
-			// panic(err)
-			utils.HandleServerError(w, err)
-		}
-		wc += n
+	trw := bytes.NewBuffer(nil)
+	err = jsonapi.MarshalPayloadWithoutIncluded(trw, articles)
+	if err != nil {
+		utils.HandleHTTPError(w, err)
+		return
 	}
+	json, err := sjson.NewFromReader(trw)
+	if err != nil {
+		utils.HandleHTTPError(w, err)
+		return
+	}
+	json.SetPath([]string{"mate", "total"}, total)
+	data, err := json.Encode()
+	if err != nil {
+		utils.HandleHTTPError(w, err)
+		return
+	}
+	w.Write(data)
+}
+
+func DeleteArticle(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	id := mux.Vars(r)["id"]
+	c := command.DeleteArticle{
+		ID: id,
+	}
+	service, err := ApplicationContext.Service()
+	if err != nil {
+		utils.HandleHTTPError(w, err)
+		return
+	}
+	err = service.DeleteArticle(c)
+	if err != nil {
+		utils.HandleHTTPError(w, err)
+		return
+	}
+
+	w.Write([]byte(successJSON))
 }

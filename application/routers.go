@@ -203,6 +203,7 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/article/list", ArticleList).Methods(http.MethodGet)
 	r.HandleFunc("/article/{id}", UpdateArticle).Methods(http.MethodPut)
 	r.HandleFunc("/article/{id}", GetArticle).Methods(http.MethodGet)
+	r.HandleFunc("/article/{id}", DeleteArticle).Methods(http.MethodDelete)
 
 	r.HandleFunc("/types", GetTypesByType).Methods(http.MethodGet)
 	r.HandleFunc("/types/create", CreateType).Methods(http.MethodPost)

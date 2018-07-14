@@ -11,15 +11,26 @@ type service struct {
 	QueryService  model.QueryService
 }
 
-func (s *service) CreateArticle(c command.CreateArticle) (*model.Article) {
+func (s *service) CreateArticle(c command.CreateArticle) (*model.Article, error) {
 	handler := commandHandler.CreateArticle {
 		ArticleRepository:    s.Repository,
 		QueryService:         s.QueryService,
 	}
+	return handler.Handle(c)
+}
 
-	article, err := handler.Handle(c)
-	if err != nil {
-		return nil
+func (s *service) UpdateArticle(c command.UpdateArticle) (*model.Article, error) {
+	handler := commandHandler.UpdateArticle{
+		ArticleRepository: s.Repository,
+		QueryService: s.QueryService,
 	}
-	return article
+	return handler.Handle(c)
+}
+
+func (s *service) DeleteArticle(c command.DeleteArticle) error {
+	handler := commandHandler.DeleteArticle{
+		ArticleRepository: s.Repository,
+		QueryService: s.QueryService,
+	}
+	return handler.Handle(c)
 }

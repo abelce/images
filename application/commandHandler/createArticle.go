@@ -14,5 +14,9 @@ type CreateArticle struct {
 func (h CreateArticle) Handle(c command.CreateArticle) (*model.Article, error) {
 	
 	article := model.NewArticle(c.Title, c.Markdowncontent, c.Private, c.Tags, c.Status, c.Categories, c.Type, c.Description)
+	err := h.ArticleRepository.Save(article)
+	if err != nil {
+		return nil, err
+	}
     return article, nil;
 }

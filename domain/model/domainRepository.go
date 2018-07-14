@@ -1,6 +1,6 @@
 package model
 
-var DomainRegistry *domainRegistry
+var DomainRegistry domainRegistry
 
 type domainRegistry struct {
 	Repository        Repository

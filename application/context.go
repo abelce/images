@@ -4,10 +4,13 @@ import (
 	"database/sql"
 	"encoding/json"
 	"io/ioutil"
-	"fmt"
+	// "fmt"
+
+	_ "github.com/go-sql-driver/mysql"
 
 	"admin/domain/model"
 	_mysql "admin/port/persistence/repository/mysql"
+	
 
 )
 type Context struct {
@@ -31,19 +34,18 @@ func NewContext(path string)(*Context, error) {
 		return nil, err
 	}
 
-	fmt.Println(cfg)
-	
 	c := &Context{
 		config: cfg,
 	}
 
-	repository, err := c.repository()
+	repository, err := c.Repository()
 	if err != nil {
 		return nil, err
 	}
+	// fmt.Println(repository)
 	model.DomainRegistry.Repository = repository
 
-	qs, err := c.queryService();
+	qs, err := c.QueryService();
 	if err != err {
 		return nil, err
 	}
@@ -53,11 +55,11 @@ func NewContext(path string)(*Context, error) {
 }
 
 
-func (c *Context) Mysql() (*mysql.DB, error){
+func (c *Context) Mysql() (*sql.DB, error){
 	if c.db != nil {
 		return c.db, nil
 	}
-	db, err := mysql.Open(c.config.DB.DriverName, c.config.DB.DataSourceName)
+	db, err := sql.Open(c.config.DB.DriverName, c.config.DB.DataSourceName)
 	if err != nil {
 		return nil, err
 	}
@@ -96,13 +98,13 @@ func (c *Context)QueryService() (model.QueryService, error) {
 		return nil, err
 	}
 
-	queryService := _mysql.NewArticleRepository( Client: db, TableName: c.config.TableName)
+	queryService := _mysql.NewArticleRepository(db, c.config.TableName)
 	c.queryService = queryService
 
 	return c.queryService, nil
 }
 
-func (c *Context)Service() (model.Service, error){
+func (c *Context)Service() (*service, error){
 	repository, err := c.Repository()
 	if err != nil {
 		return nil, err
@@ -114,7 +116,7 @@ func (c *Context)Service() (model.Service, error){
 	}
 
 	if c.service == nil {
-		return &Service{
+		c.service = &service{
 			Repository: repository,
 		    QueryService: queryService,
 		}
