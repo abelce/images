@@ -1,7 +1,7 @@
 package model
 
 type Repository interface {
-	Save(a *Article) error
+	Save(a *Image) error
 	NewIdentity() string
-	UpdateByID(id string, article *Article)(*Article, error)
+	// UpdateByID(id string, article *Image)(*Image, error)
 }

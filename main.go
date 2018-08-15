@@ -1,12 +1,11 @@
 package main
 
 import (
-	// "encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
-	"admin/application"
+	"images/application"
 )
 
 type contentTypeMiddleware struct {
@@ -21,32 +20,14 @@ func (h *contentTypeMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 	w.Header().Set("access-control-expose-headers", "*")
 	w.Header().Set("access-control-allow-credentials", "true")
 
+	fmt.Println(r.URL.Path)
+
+
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(200)
 		return;
 	}
-	//判断cookie是否存在
-	// cookie, err := r.Cookie("gosessionid")
-	// if r.URL.Path != "/login" && (err != nil || cookie.Value == "") {
-	// 	message := struct {
-	// 		Message string
-	// 	}{
-	// 		Message: "session is expiresed",
-	// 	}
-
-	// 	result, _ := json.Marshal(message)
-	// 	wc := 0
-
-	// 	for wc < len(result) {
-	// 		n, err := w.Write(result)
-	// 		if err != nil {
-	// 			panic(err)
-	// 		}
-	// 		wc += n
-	// 	}
-	// } else {
-		h.next.ServeHTTP(w, r)
-	// }
+	h.next.ServeHTTP(w, r)
 }
 
 func main() {
@@ -64,7 +45,8 @@ func main() {
 		next: application.NewRouter(),
 	}
 
-	err = http.ListenAndServe(":9001", routeHandler)
+	err = http.ListenAndServe(":9002", routeHandler)
+
 	if err != nil {
 		log.Fatal(err)
 		panic(err)

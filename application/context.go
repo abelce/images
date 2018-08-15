@@ -8,8 +8,8 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"admin/domain/model"
-	_mysql "admin/port/persistence/repository/mysql"
+	"images/domain/model"
+	_mysql "images/port/persistence/repository/mysql"
 	
 
 )
@@ -78,7 +78,7 @@ func (c *Context) Repository() (model.Repository, error){
 	if err != nil {
 		return nil, err
 	}
-	repository := &_mysql.ArticleRepository{
+	repository := &_mysql.ImageRepository{
 		Client: db,
 		TableName: c.config.TableName,
 	}
@@ -98,7 +98,7 @@ func (c *Context)QueryService() (model.QueryService, error) {
 		return nil, err
 	}
 
-	queryService := _mysql.NewArticleRepository(db, c.config.TableName)
+	queryService := _mysql.NewImageRepository(db, c.config.TableName)
 	c.queryService = queryService
 
 	return c.queryService, nil

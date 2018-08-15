@@ -1,6 +1,6 @@
 package model
 
 type QueryService interface {
-	Find(offsetNum, limit int) (int, []*Article, error)
-	FindByID(id string) (*Article, error)
+	Find(offsetNum, limit int) (int, []*Image, error)
+	// FindByID(id string) (*Image, error)
 }
