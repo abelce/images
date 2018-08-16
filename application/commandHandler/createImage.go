@@ -1,8 +1,8 @@
 package commandHandler
 
 import (
-	"admin/application/command"
-	"admin/domain/model"
+	"images/application/command"
+	"images/domain/model"
 )
 
 type CreateImage struct {
@@ -11,9 +11,9 @@ type CreateImage struct {
 }
 
 // (title, markdowncontent, private, tags, status, categories, typ, description string)
-func (h CreateImage) Handle(c command.CreateImage) (*model.Article, error) {
+func (h CreateImage) Handle(c command.CreateImage) (*model.Image, error) {
 	
-	image := model.NewArticle(c.Url)
+	image := model.NewImage(c.Url)
 	err := h.ImageRepository.Save(image)
 	if err != nil {
 		return nil, err

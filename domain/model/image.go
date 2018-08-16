@@ -12,7 +12,7 @@ type Image struct {
 	LastUpdateTime        int64 `json:"lastUpdateTime" jsonapi:"attr,lastUpdateTime"`          
 }
 
-func NewArticle(url string) *Image {
+func NewImage(url string) *Image {
 	createTime := time.Now().Unix()
 	lastUpdateTime := createTime
 	return &Image {

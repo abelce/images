@@ -20,9 +20,6 @@ func (h *contentTypeMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 	w.Header().Set("access-control-expose-headers", "*")
 	w.Header().Set("access-control-allow-credentials", "true")
 
-	fmt.Println(r.URL.Path)
-
-
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(200)
 		return;
@@ -45,7 +42,7 @@ func main() {
 		next: application.NewRouter(),
 	}
 
-	err = http.ListenAndServe(":9002", routeHandler)
+	err = http.ListenAndServe(":9012", routeHandler)
 
 	if err != nil {
 		log.Fatal(err)

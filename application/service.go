@@ -1,9 +1,9 @@
 package application
 
 import (
-	"admin/domain/model"
-	"admin/application/command"
-	"admin/application/commandHandler"
+	"images/domain/model"
+	"images/application/command"
+	"images/application/commandHandler"
 )
 
 type service struct {

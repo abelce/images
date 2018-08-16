@@ -1,7 +1,7 @@
 package application
 
 import (
-	"bytes"
+//	"bytes"
 	"net/http"
 	"io/ioutil"
 	"fmt"
@@ -14,7 +14,7 @@ import (
 //	"errors"
 	"github.com/google/jsonapi"
 	"images/application/command"
-	sjson "github.com/bitly/go-simplejson"
+//	sjson "github.com/bitly/go-simplejson"
 )
 
 const successJSON = `{
@@ -124,44 +124,44 @@ func SaveImage(w http.ResponseWriter, r *http.Request) {
 // }
 
 
-func ImageList(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	var pageSize int = 100
-	var pageNum int = 1
-	if r.FormValue("pageSize") != "" {
-		pageSize, _ = strconv.Atoi(r.FormValue("pageSize"))
-	}
-	if r.FormValue("pageNum") != "" {
-		pageNum, _ = strconv.Atoi(r.FormValue("pageNum"))
-	}
+// func ArticleList(w http.ResponseWriter, r *http.Request) {
+// 	r.ParseForm()
+// 	var pageSize int = 100
+// 	var pageNum int = 1
+// 	if r.FormValue("pageSize") != "" {
+// 		pageSize, _ = strconv.Atoi(r.FormValue("pageSize"))
+// 	}
+// 	if r.FormValue("pageNum") != "" {
+// 		pageNum, _ = strconv.Atoi(r.FormValue("pageNum"))
+// 	}
 
-	offsetNum := (pageNum - 1) * pageSize
-	limitNum := pageNum * pageSize
-	qs, err := ApplicationContext.QueryService()
-	total, articles, err := qs.Find(offsetNum, limitNum)
-	if err != nil {
-		utils.HandleHTTPError(w, err)
-		return
-	}
-	trw := bytes.NewBuffer(nil)
-	err = jsonapi.MarshalPayloadWithoutIncluded(trw, articles)
-	if err != nil {
-		utils.HandleHTTPError(w, err)
-		return
-	}
-	json, err := sjson.NewFromReader(trw)
-	if err != nil {
-		utils.HandleHTTPError(w, err)
-		return
-	}
-	json.SetPath([]string{"mate", "total"}, total)
-	data, err := json.Encode()
-	if err != nil {
-		utils.HandleHTTPError(w, err)
-		return
-	}
-	w.Write(data)
-}
+// 	offsetNum := (pageNum - 1) * pageSize
+// 	limitNum := pageNum * pageSize
+// 	qs, err := ApplicationContext.QueryService()
+// 	total, articles, err := qs.Find(offsetNum, limitNum)
+// 	if err != nil {
+// 		utils.HandleHTTPError(w, err)
+// 		return
+// 	}
+// 	trw := bytes.NewBuffer(nil)
+// 	err = jsonapi.MarshalPayloadWithoutIncluded(trw, articles)
+// 	if err != nil {
+// 		utils.HandleHTTPError(w, err)
+// 		return
+// 	}
+// 	json, err := sjson.NewFromReader(trw)
+// 	if err != nil {
+// 		utils.HandleHTTPError(w, err)
+// 		return
+// 	}
+// 	json.SetPath([]string{"mate", "total"}, total)
+// 	data, err := json.Encode()
+// 	if err != nil {
+// 		utils.HandleHTTPError(w, err)
+// 		return
+// 	}
+// 	w.Write(data)
+// }
 
 // func DeleteArticle(w http.ResponseWriter, r *http.Request) {
 // 	defer r.Body.Close()

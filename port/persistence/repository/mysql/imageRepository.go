@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-    "github.com/satori/go.uuid"
+	"github.com/satori/go.uuid"
 
 	"images/domain/model"
 )
@@ -24,7 +24,7 @@ func NewImageRepository(client *sql.DB, tableName string) *ImageRepository {
 func (p *ImageRepository) Save(image *model.Image) error {
 	id := p.NewIdentity()
 	image.ID = id
-	queryStr := fmt.Sprintf(`INSERT %s VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`, p.TableName)
+	queryStr := fmt.Sprintf(`INSERT %s VALUES(?,?,?,?,?)`, p.TableName)
 	_, err := p.Client.Exec(queryStr, 
 		image.ID, 
 		image.Url, 
@@ -87,40 +87,32 @@ func (p *ImageRepository) NewIdentity() string {
 	return id.String()
 }
 
-// func (p *ImageRepository) Find(offsetNum, limit int) (total int, articles []*model.Image, err error) {
-// 	queryStr := fmt.Sprintf(`SELECT SQL_CALC_FOUND_ROWS id, title, markdowncontent, private, tags, categories,type,description,createTime, lastUpdateTime, status, deleted  FROM %s LIMIT ?,?`, p.TableName)
-// 	rows, err := p.Client.Query(queryStr, offsetNum, limit)
-// 	if err != nil {
-// 		return 0, nil, err
-// 	}
-// 	queryStr = fmt.Sprintf(`SELECT count(*) FROM %s`, p.TableName)
-// 	err = p.Client.QueryRow(queryStr).Scan(&total)
-// 	fmt.Println(total)
-// 	if err != nil {
-// 		return 0, nil, err
-// 	}
-// 	if total == 0 {
-// 		return 0, nil, nil
-// 	}
+func (p *ImageRepository) Find(offsetNum, limit int) (total int, images []*model.Image, err error) {
+	queryStr := fmt.Sprintf(`SELECT SQL_CALC_FOUND_ROWS id, url, deleted, createTime, lastUpdateTime FROM %s LIMIT ?,?`, p.TableName)
+	rows, err := p.Client.Query(queryStr, offsetNum, limit)
+	if err != nil {
+		return 0, nil, err
+	}
+	queryStr = fmt.Sprintf(`SELECT count(*) FROM %s`, p.TableName)
+	err = p.Client.QueryRow(queryStr).Scan(&total)
+	if err != nil {
+		return 0, nil, err
+	}
+	if total == 0 {
+		return 0, nil, nil
+	}
 
-// 	for rows.Next() {
-// 		article := new(model.Article)
-// 		rows.Scan(
-// 			&article.ID,
-// 			&article.Title,
-// 			&article.Markdowncontent,
-// 			&article.Private,
-// 			&article.Tags,
-// 			&article.Categories,
-// 			&article.Type,
-// 			&article.Description,
-// 			&article.CreateTime,
-// 			&article.LastUpdateTime,
-// 			&article.Status,
-// 			&article.Deleted,
-// 		)
-// 		articles = append(articles, article)
-// 	}
+	for rows.Next() {
+		image := new(model.Image)
+		rows.Scan(
+			&image.ID,
+			&image.Url,
+			&image.Deleted,
+			&image.CreateTime,
+			&image.LastUpdateTime,
+		)
+		images = append(images, image)
+	}
 	
-// 	return total, articles, nil
-// }
+	return total, images, nil
+}
