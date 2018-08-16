@@ -55,7 +55,6 @@ func SaveImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	fmt.Println(image.ID)
 	err = jsonapi.MarshalPayloadWithoutIncluded(w, image)
 	if err != nil {
 		utils.HandleHTTPError(w, err)

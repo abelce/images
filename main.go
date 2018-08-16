@@ -32,7 +32,6 @@ func main() {
 	path := "./config.json"
 	cxt, err := application.NewContext(path)
 	if err != nil {
-		fmt.Println("启动失败")
 		fmt.Println(err)
 		return
 	}
