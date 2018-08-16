@@ -22,14 +22,14 @@ func (h *contentTypeMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(200)
-		return;
+		return
 	}
 	h.next.ServeHTTP(w, r)
 }
 
 func main() {
 
-	path := "./config.json"
+	path := "/work/src/images/config.json"
 	cxt, err := application.NewContext(path)
 	if err != nil {
 		fmt.Println("启动失败")
