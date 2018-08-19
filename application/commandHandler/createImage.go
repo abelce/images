@@ -25,13 +25,14 @@ func (h CreateImage) Handle(c command.CreateImage) (*model.Image, error) {
 		fmt.Println(err)
 	}
 	fmt.Println(u.Path)
-	//	path := "/data/upload_files"
-	file, _ := os.Open(c.Url)
-	fmt.Println(c.Url)
+	path := "/data/upload_files" + u.Path
+	file, _ := os.Open(path)
+	defer file.Close()
+	fmt.Println(file)
 	img, str, err := image.DecodeConfig(file)
 	fmt.Println(str)
 	if err != nil {
-		fmt.Println("err")
+		fmt.Println(err)
 		return nil, err
 	}
 	c.Width = img.Width

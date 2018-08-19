@@ -29,7 +29,7 @@ func (h *contentTypeMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 
 func main() {
 
-	path := "/work/src/images/config.json"
+	path := "./config.json"
 	cxt, err := application.NewContext(path)
 	if err != nil {
 		fmt.Println(err)
