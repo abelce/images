@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"image"
 	_ "image/gif"
-    _ "image/jpeg"
-    _ "image/png"
+	_ "image/jpeg"
+	_ "image/png"
 	"net/url"
 	"os"
 
@@ -42,6 +42,7 @@ func (h CreateImage) Handle(c command.CreateImage) (*model.Image, error) {
 	c.Height = img.Height
 	fmt.Println(c.Width)
 	image := model.NewImage(c.Url, c.Width, c.Height)
+	fmt.Println(image.Width, image.Height)
 	err = h.ImageRepository.Save(image)
 	if err != nil {
 		return nil, err
