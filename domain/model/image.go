@@ -7,8 +7,8 @@ import (
 type Image struct {
 	ID                    string `json:"id" jsonapi:"primary,image"`
 	Url                   string `json:"url" jsonapi:"attr,url"`  
-	Width                 int `json:url jsonapi:"attr,width"`
-	Height                int `json:url jsonapi:"attr,height"`
+	Width                 int `json:"width" jsonapi:"attr,width"`
+	Height                int `json:"height" jsonapi:"attr,height"`
 	Deleted               bool `json:"deleted" jsonapi:"attr,deleted"`  
 	CreateTime            int64 `json:"createTime" jsonapi:"attr,createTime"`  
 	LastUpdateTime        int64 `json:"lastUpdateTime" jsonapi:"attr,lastUpdateTime"`          
