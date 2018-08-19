@@ -27,7 +27,9 @@ func (p *ImageRepository) Save(image *model.Image) error {
 	queryStr := fmt.Sprintf(`INSERT %s VALUES(?,?,?,?,?)`, p.TableName)
 	_, err := p.Client.Exec(queryStr, 
 		image.ID, 
-		image.Url, 
+		image.Url,
+		image.Width,
+		image.Height, 
 		image.Deleted,
 		image.CreateTime,
 		image.LastUpdateTime,
