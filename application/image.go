@@ -3,7 +3,7 @@ package application
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	// "fmt"
 	"io/ioutil"
 	"net/http"
 	// "strings"
@@ -30,7 +30,6 @@ func GetTimestampString() string {
 
 func SaveImage(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println("savaImage")
 	utils.ResetHTTPErrors()
 	r.ParseForm()
 	data, err := ioutil.ReadAll(r.Body)
@@ -51,7 +50,6 @@ func SaveImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(a.Url)
 	image, err := service.CreateImage(*a)
 	if err != nil {
 		utils.HandleHTTPError(w, err)
