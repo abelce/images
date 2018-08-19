@@ -3,6 +3,9 @@ package commandHandler
 import (
 	"fmt"
 	"image"
+	_ "image/gif"
+    _ "image/jpeg"
+    _ "image/png"
 	"net/url"
 	"os"
 
