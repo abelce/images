@@ -2,3 +2,5 @@
 .idea
 config.json
 ./main.go
+*.go.swp
+/application/commandHandler/1

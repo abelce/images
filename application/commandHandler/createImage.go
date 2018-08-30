@@ -6,13 +6,13 @@ import (
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
+	"log"
 	"net/url"
 	"os"
-	"time"
-	"strings"
-	"strconv"
-	"log"
 	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
 
 	"images/application/command"
 	"images/domain/model"
@@ -83,7 +83,7 @@ func CreateSvg(Input string) (svgurl string) {
 	Mode = 1
 	Alpha = 128
 	Repeat = 0
-	Configs = append(Configs, shapeConfig{100, Mode, Alpha, Repeat});
+	Configs = append(Configs, shapeConfig{100, Mode, Alpha, Repeat})
 	fid, _ := uuid.NewV4()
 	output := "/data/upload_files/" + fid.String() + ".svg"
 
@@ -103,7 +103,6 @@ func CreateSvg(Input string) (svgurl string) {
 	newModel := primitive.NewModel(input, bg, OutputSize, Workers)
 	primitive.Log(1, "%d: t=%.3f, score=%.6f\n", 0, 0.0, newModel.Score)
 
-
 	for j, config := range Configs {
 		primitive.Log(1, "count=%d, mode=%d, alpha=%d, repeat=%d\n",
 			config.Count, config.Mode, config.Alpha, config.Repeat)
@@ -120,24 +119,24 @@ func CreateSvg(Input string) (svgurl string) {
 
 			// write output image(s)
 			// for _, output := range Outputs {
-				ext := strings.ToLower(filepath.Ext(output))
-				percent := strings.Contains(output, "%")
-				saveFrames := percent && ext != ".gif"
-				saveFrames = saveFrames && frame%Nth == 0
-				last := j == len(Configs)-1 && i == config.Count-1
-				if saveFrames || last {
-					path := output
-					if percent {
-						path = fmt.Sprintf(output, frame)
-					}
-					primitive.Log(1, "writing %s\n", path)
-					switch ext {
-					default:
-						check(fmt.Errorf("unrecognized file extension: %s", ext))
-					case ".svg":
-						check(primitive.SaveFile(path, newModel.SVG()))
-					}
+			ext := strings.ToLower(filepath.Ext(output))
+			percent := strings.Contains(output, "%")
+			saveFrames := percent && ext != ".gif"
+			saveFrames = saveFrames && frame%Nth == 0
+			last := j == len(Configs)-1 && i == config.Count-1
+			if saveFrames || last {
+				path := output
+				if percent {
+					path = fmt.Sprintf(output, frame)
 				}
+				primitive.Log(1, "writing %s\n", path)
+				switch ext {
+				default:
+					check(fmt.Errorf("unrecognized file extension: %s", ext))
+				case ".svg":
+					check(primitive.SaveFile(path, newModel.SVG()))
+				}
+			}
 			// }
 		}
 	}
@@ -169,7 +168,7 @@ func (h CreateImage) Handle(c command.CreateImage) (*model.Image, error) {
 	}
 	c.Width = img.Width
 	c.Height = img.Height
-	c.SvgUrl = CreateSvg(c.Url)
+	c.SvgUrl = CreateSvg(path)
 	image := model.NewImage(c.Url, c.Width, c.Height, c.SvgUrl)
 	err = h.ImageRepository.Save(image)
 	if err != nil {
