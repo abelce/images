@@ -75,7 +75,6 @@ func check(err error) {
 }
 
 func CreateSvg(Input string) (svgurl string) {
-
 	start := time.Now()
 	frame := 0
 	Nth = 1
@@ -86,7 +85,8 @@ func CreateSvg(Input string) (svgurl string) {
 	Repeat = 0
 	Configs = append(Configs, shapeConfig{100, Mode, Alpha, Repeat})
 	fid, _ := uuid.NewV4()
-	output := "/data/upload_files/" + fid.String() + ".svg"
+	_fileName := fid.String() + ".svg"
+	output := "/data/upload_files/" + _fileName
 
 	if len(Configs) == 1 {
 		Configs[0].Mode = Mode
@@ -142,7 +142,7 @@ func CreateSvg(Input string) (svgurl string) {
 		}
 	}
 
-	return output
+	return "http://static.tangzhengxiong.com/" + _fileName
 }
 
 type CreateImage struct {
@@ -169,6 +169,7 @@ func (h CreateImage) Handle(c command.CreateImage) (*model.Image, error) {
 	}
 	c.Width = img.Width
 	c.Height = img.Height
+	fmt.Println("CreateSvg")
 	svg := CreateSvg(path)
 	fmt.Println(svg)
 	c.SvgUrl = svg
