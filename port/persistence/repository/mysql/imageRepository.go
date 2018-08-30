@@ -110,6 +110,7 @@ func (p *ImageRepository) Find(offsetNum, limit int) (total int, images []*model
 		rows.Scan(
 			&image.ID,
 			&image.Url,
+			&image.SvgUrl,
 			&image.Width,
 			&image.Height,
 			&image.Deleted,
