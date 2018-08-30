@@ -169,9 +169,7 @@ func (h CreateImage) Handle(c command.CreateImage) (*model.Image, error) {
 	}
 	c.Width = img.Width
 	c.Height = img.Height
-	fmt.Println("CreateSvg")
 	svg := CreateSvg(path)
-	fmt.Println(svg)
 	c.SvgUrl = svg
 	image := model.NewImage(c.Url, c.Width, c.Height, c.SvgUrl)
 	err = h.ImageRepository.Save(image)
