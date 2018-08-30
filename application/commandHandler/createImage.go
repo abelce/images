@@ -79,7 +79,7 @@ func CreateSvg(Input string) (svgurl string) {
 	frame := 0
 	Nth = 1
 	OutputSize = 512
-	Workers = 0
+	Workers = runtime.NumCPU()
 	Mode = 1
 	Alpha = 128
 	Repeat = 0
