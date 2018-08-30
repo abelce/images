@@ -24,10 +24,11 @@ func NewImageRepository(client *sql.DB, tableName string) *ImageRepository {
 func (p *ImageRepository) Save(image *model.Image) error {
 	id := p.NewIdentity()
 	image.ID = id
-	queryStr := fmt.Sprintf(`INSERT %s VALUES(?,?,?,?,?,?,?)`, p.TableName)
+	queryStr := fmt.Sprintf(`INSERT %s VALUES(?,?,?,?,?,?,?,?)`, p.TableName)
 	_, err := p.Client.Exec(queryStr, 
 		image.ID, 
 		image.Url,
+		image.SvgUrl,
 		image.Width,
 		image.Height, 
 		image.Deleted,

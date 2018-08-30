@@ -7,6 +7,7 @@ import (
 type Image struct {
 	ID                    string `json:"id" jsonapi:"primary,image"`
 	Url                   string `json:"url" jsonapi:"attr,url"`  
+	SvgUrl                string `json:"svgurl" jsonapi:"attr,svgurl"`
 	Width                 int `json:"width" jsonapi:"attr,width"`
 	Height                int `json:"height" jsonapi:"attr,height"`
 	Deleted               bool `json:"deleted" jsonapi:"attr,deleted"`  
@@ -14,11 +15,12 @@ type Image struct {
 	LastUpdateTime        int64 `json:"lastUpdateTime" jsonapi:"attr,lastUpdateTime"`          
 }
 
-func NewImage(url string, width int, height int) *Image {
+func NewImage(url string, width int, height int, svgurl string) *Image {
 	createTime := time.Now().Unix()
 	lastUpdateTime := createTime
 	return &Image {
 		Url:                   url,
+		SvgUrl:                svgurl,
 		Width:                 width,
 		Height:                height,
 		Deleted:               false,
