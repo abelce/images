@@ -1,4 +1,4 @@
-package mysql 
+package mysql
 
 import (
 	"database/sql"
@@ -10,8 +10,8 @@ import (
 )
 
 type ImageRepository struct {
-	Client     *sql.DB
-	TableName  string
+	Client    *sql.DB
+	TableName string
 }
 
 func NewImageRepository(client *sql.DB, tableName string) *ImageRepository {
@@ -25,12 +25,12 @@ func (p *ImageRepository) Save(image *model.Image) error {
 	id := p.NewIdentity()
 	image.ID = id
 	queryStr := fmt.Sprintf(`INSERT %s VALUES(?,?,?,?,?,?,?,?)`, p.TableName)
-	_, err := p.Client.Exec(queryStr, 
-		image.ID, 
+	_, err := p.Client.Exec(queryStr,
+		image.ID,
 		image.Url,
 		image.SvgUrl,
 		image.Width,
-		image.Height, 
+		image.Height,
 		image.Deleted,
 		image.CreateTime,
 		image.LastUpdateTime,
@@ -45,8 +45,8 @@ func (p *ImageRepository) Save(image *model.Image) error {
 // 	queryStr := fmt.Sprintf(`SELECT * FROM %s WHERE id=?`, p.TableName)
 // 	article := model.Article{}
 // 	err := p.Client.QueryRow(queryStr, id).Scan(
-// 		&article.ID, 
-// 		&article.Title, 
+// 		&article.ID,
+// 		&article.Title,
 // 		&article.Markdowncontent,
 // 		&article.Private,
 // 		&article.Tags,
@@ -67,10 +67,10 @@ func (p *ImageRepository) Save(image *model.Image) error {
 // func (p *ArticleRepository) UpdateByID(id string, article *model.Article) (*model.Article, error) {
 // 	queryStr := fmt.Sprintf(`UPDATE %s SET title=?,markdowncontent=?,private=?,tags=?,categories=?,type=?,description=?,status=?,deleted=? WHERE id=?`, p.TableName)
 // 	_, err := p.Client.Exec(
-// 		queryStr, 
-// 		article.Title, 
-// 		article.Markdowncontent, 
-// 		article.Private, 
+// 		queryStr,
+// 		article.Title,
+// 		article.Markdowncontent,
+// 		article.Private,
 // 		article.Tags,
 // 		article.Categories,
 // 		article.Type,
@@ -91,7 +91,7 @@ func (p *ImageRepository) NewIdentity() string {
 }
 
 func (p *ImageRepository) Find(offsetNum, limit int) (total int, images []*model.Image, err error) {
-	queryStr := fmt.Sprintf(`SELECT SQL_CALC_FOUND_ROWS id, url, svgurl, width, height, deleted, createTime, lastUpdateTime FROM %s LIMIT ?,?`, p.TableName)
+	queryStr := fmt.Sprintf(`SELECT SQL_CALC_FOUND_ROWS id, IFNULL(url, ""), IFNULL(svgurl, ""), width, height, deleted, createTime, lastUpdateTime FROM %s LIMIT ?,?`, p.TableName)
 	rows, err := p.Client.Query(queryStr, offsetNum, limit)
 	if err != nil {
 		return 0, nil, err
@@ -119,6 +119,6 @@ func (p *ImageRepository) Find(offsetNum, limit int) (total int, images []*model
 		)
 		images = append(images, image)
 	}
-	
+
 	return total, images, nil
 }
