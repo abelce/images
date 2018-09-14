@@ -1,8 +1,8 @@
 package application
 
 import (
-	"admin/domain"
-	// "admin/port"
+	"images/domain"
+	// "images/port"
 	// "encoding/json"
 	"github.com/gorilla/mux"
 	// "io/ioutil"

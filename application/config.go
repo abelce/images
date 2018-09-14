@@ -5,16 +5,16 @@ type config struct {
 	Port  uint16 `json:"port"`
 	DB struct {
 		DriverName     string `json:"driverName"`      // mysql
-		DataSourceName string `json:"dataSourceName"`  // "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true"
+		DataSourceName string `json:"dataSourceName"`  // "abelce:Tzx_301214@tcp(111.231.192.70:3306)/images?parseTime=true"
 	}
 	TableName          string `json:"tableName"`  
 	FileDB struct {
 		DriverName     string `json:"driverName"`      // mysql
-		DataSourceName string `json:"dataSourceName"`  // "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true"
+		DataSourceName string `json:"dataSourceName"`  // "abelce:Tzx_301214@tcp(111.231.192.70:3306)/images?parseTime=true"
 	}
 	AritcleDB struct {
 		DriverName     string `json:"driverName"`      // mysql
-		DataSourceName string `json:"dataSourceName"`  // "abelce:Tzx_301214@tcp(111.231.192.70:3306)/admin?parseTime=true"
+		DataSourceName string `json:"dataSourceName"`  // "abelce:Tzx_301214@tcp(111.231.192.70:3306)/images?parseTime=true"
 	}
 }
 
