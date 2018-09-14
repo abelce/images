@@ -93,6 +93,7 @@ func (p *ImageRepository) NewIdentity() string {
 func (p *ImageRepository) Find(offsetNum, limit int) (total int, images []*model.Image, err error) {
 	queryStr := fmt.Sprintf(`SELECT SQL_CALC_FOUND_ROWS id, url, svgurl, width, height, deleted, createTime, lastUpdateTime FROM %s LIMIT ?,?`, p.TableName)
 	rows, err := p.Client.Query(queryStr, offsetNum, limit)
+	defer rows.Close();
 	if err != nil {
 		return 0, nil, err
 	}
